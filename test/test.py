@@ -10,7 +10,7 @@ import unittest
 import numpy as np
 from graphnet import Graph, Node, VECTOR
 from graphnet.algorithms import dijkstra
-from graphnet.algorithms import get_bridge_edges
+from graphnet.algorithms import get_bridge_edges, get_articulation_points
 
 persons = [{"name":"frank", "age":19, "sex":"M"},
             {"name": "sam", "age": 22, "sex":"M"},
@@ -119,6 +119,18 @@ class Test(unittest.TestCase):
         self.g.add_edge(2, 4)
         bridges = get_bridge_edges(self.g)
         self.assertEqual(len(bridges), 0)
+
+    def test_get_articulation_points(self):
+        self.g = Graph(type="scalar")
+        self.g.add_nodes_from_iterable(range(5))
+        self.g.add_edge(0, 1) 
+        self.g.add_edge(0, 2) 
+        self.g.add_edge(1, 2)  
+        self.g.add_edge(2, 3) 
+        self.g.add_edge(3, 4)
+        articulation_points = get_articulation_points(self.g)
+        self.assertIn(self.g[2], articulation_points)
+        self.assertIn(self.g[3], articulation_points)
 
 if __name__ == '__main__':
     unittest.main()
