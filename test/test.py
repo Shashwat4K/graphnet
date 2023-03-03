@@ -10,6 +10,7 @@ import unittest
 import numpy as np
 from graphnet import Graph, Node, VECTOR
 from graphnet.algorithms import dijkstra
+from graphnet.algorithms import get_bridge_edges
 
 persons = [{"name":"frank", "age":19, "sex":"M"},
             {"name": "sam", "age": 22, "sex":"M"},
@@ -94,7 +95,30 @@ class Test(unittest.TestCase):
         self.g.add_edge(2, 3) 
         self.g.add_edge(3, 3) 
         self.assertEqual(self.g.DFS(2), [self.g[2], self.g[0], self.g[1], self.g[3]])
-        
+    
+    def test_get_bridge_edges(self):
+        self.g = Graph(type="scalar")
+        self.g.add_nodes_from_iterable(range(5))
+        self.g.add_edge(0, 1) 
+        self.g.add_edge(0, 2) 
+        self.g.add_edge(1, 2)  
+        self.g.add_edge(2, 3) 
+        self.g.add_edge(3, 4)
+        bridges = get_bridge_edges(self.g)
+        self.assertIn((self.g[3], self.g[4]), bridges)
+        self.assertIn((self.g[2], self.g[3]), bridges)
+    
+    def test_get_bridge_edges_empty(self):
+        self.g = Graph(type="scalar")
+        self.g.add_nodes_from_iterable(range(5))
+        self.g.add_edge(0, 1) 
+        self.g.add_edge(0, 2) 
+        self.g.add_edge(1, 2)  
+        self.g.add_edge(2, 3) 
+        self.g.add_edge(3, 4)
+        self.g.add_edge(2, 4)
+        bridges = get_bridge_edges(self.g)
+        self.assertEqual(len(bridges), 0)
 
 if __name__ == '__main__':
     unittest.main()
